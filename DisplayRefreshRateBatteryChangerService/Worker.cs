@@ -11,7 +11,6 @@ namespace DisplayRefreshRateBatteryChangerService
         private readonly ILogger<Worker> _logger;
         private readonly IRefreshRateChangeService _refreshRateChangeService;
 
-
         public Worker(ILogger<Worker> logger, IRefreshRateChangeService refreshRateChangeService)
         {
             _logger = logger;
@@ -22,10 +21,10 @@ namespace DisplayRefreshRateBatteryChangerService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                await Task.Delay(1000, stoppingToken);
+
                 if (_refreshRateChangeService.CheckChangeRefresh())
                     _logger.LogInformation("Changed main display refresh rate to: {0}", _refreshRateChangeService.LastRefreshRate);
-
-                await Task.Delay(1000, stoppingToken);
             }
         }
     }

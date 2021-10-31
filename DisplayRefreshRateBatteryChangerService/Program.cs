@@ -10,10 +10,8 @@ namespace DisplayRefreshRateBatteryChangerService
 {
     public class Program
     {
-        public static void Main(string[] args)
-        {
+        public static void Main(string[] args) =>
             CreateHostBuilder(args).Build().Run();
-        }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
@@ -22,10 +20,8 @@ namespace DisplayRefreshRateBatteryChangerService
                 .ConfigureAppConfiguration(ConfigureAppConfiguration)
                 .ConfigureServices(ConfigureServices);
 
-        public static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder logging)
-        {
+        public static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder logging) => 
             logging.AddEventLog();
-        }
 
         public static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services) {
             services.AddOptions();

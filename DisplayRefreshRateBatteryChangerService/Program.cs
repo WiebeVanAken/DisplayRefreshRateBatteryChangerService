@@ -3,6 +3,7 @@ using DisplayRefreshRateBatteryChangerService.Services.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace DisplayRefreshRateBatteryChangerService
@@ -16,9 +17,15 @@ namespace DisplayRefreshRateBatteryChangerService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(ConfigureAppConfiguration)
                 .UseWindowsService()
+                .ConfigureLogging(ConfigureLogging)
+                .ConfigureAppConfiguration(ConfigureAppConfiguration)
                 .ConfigureServices(ConfigureServices);
+
+        public static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder logging)
+        {
+            logging.AddEventLog();
+        }
 
         public static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services) {
             services.AddOptions();
@@ -31,7 +38,7 @@ namespace DisplayRefreshRateBatteryChangerService
         public static void ConfigureAppConfiguration(HostBuilderContext hostContext, IConfigurationBuilder config)
         {
             config
-                .SetBasePath(Environment.CurrentDirectory)
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appSettings.json", true, true);
 
             config.AddEnvironmentVariables();

@@ -4,6 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>dotnet-DisplayRefreshRateBatteryChangerService-451692F2-25A7-4FDD-AA40-453DAA7DD5D0</UserSecretsId>
     <StartupObject>DisplayRefreshRateBatteryChangerService.Program</StartupObject>
+    <ApplicationIcon />
+    <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>

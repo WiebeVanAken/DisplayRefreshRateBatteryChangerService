@@ -1,36 +1,25 @@
-﻿using DisplayRefreshRateBatteryChangerService.Services.Options;
+﻿using DisplayRefreshRateBatteryChangerService.DTO;
+using DisplayRefreshRateBatteryChangerService.Services.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
 
 namespace DisplayRefreshRateBatteryChangerService.Services
 {
-    public class RefreshRateChangeService : IRefreshRateChangeService, IDisposable
+    public class RefreshRateChangeService : IRefreshRateChangeService
     {
-        private Process _cmdProcess;
+        private ILogger<Worker> _logger;
         private int _refreshRateOnBattery, _refreshRateOnPlugged, _lastRefreshRate;
 
         public int LastRefreshRate => _lastRefreshRate;
 
-        public RefreshRateChangeService(IOptions<RefreshRateOptions> options)
+        public RefreshRateChangeService(IOptions<RefreshRateOptions> options, ILogger<Worker> logger)
         {
+            _logger = logger;
             _lastRefreshRate = 0;
             _refreshRateOnBattery = options.Value.RefreshRateOnBattery;
             _refreshRateOnPlugged = options.Value.RefreshRateOnPlugged;
-
-            _cmdProcess = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    CreateNoWindow = false,
-                    FileName = @"C:\Windows\System32\cmd.exe",
-                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = false
-                }
-            };
-
-            _cmdProcess.Start();
         }
 
         public bool CheckChangeRefresh()
@@ -49,13 +38,18 @@ namespace DisplayRefreshRateBatteryChangerService.Services
 
         private void ExecuteChangeCommand(int newRefreshRate)
         {
-            _cmdProcess.StandardInput.WriteLine("QRes /r {0}", newRefreshRate);
+            _logger.LogInformation(AppDomain.CurrentDomain.BaseDirectory);
+            using (Process process = Process.Start(
+                new ProcessStartInfo
+                {
+                    FileName = AppDomain.CurrentDomain.BaseDirectory + "QRes.exe",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    Arguments = String.Format("/r {0}", newRefreshRate)
+                }
+            ))
+            
             _lastRefreshRate = newRefreshRate;
-        }
-
-        public void Dispose()
-        {
-            _cmdProcess.Kill();
         }
     }
 }
